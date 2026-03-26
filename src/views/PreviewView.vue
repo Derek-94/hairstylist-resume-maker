@@ -31,13 +31,17 @@ const exportingType = ref<'pdf' | 'image' | null>(null)
 
 async function getCanvas() {
   await document.fonts.ready
+  const el = resumeRef.value!
   const html2canvas = (await import('html2canvas')).default
-  return html2canvas(resumeRef.value!, {
+  return html2canvas(el, {
     scale: 2,
     useCORS: true,
     allowTaint: true,
     backgroundColor: '#ffffff',
     logging: false,
+    width: el.scrollWidth,
+    height: el.scrollHeight,
+    windowWidth: el.scrollWidth,
   })
 }
 
