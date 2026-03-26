@@ -32,16 +32,19 @@ const exportingType = ref<'pdf' | 'image' | null>(null)
 async function getCanvas() {
   await document.fonts.ready
   const el = resumeRef.value!
+  const w = el.offsetWidth
+  const h = el.scrollHeight
   const html2canvas = (await import('html2canvas')).default
   return html2canvas(el, {
     scale: 2,
     useCORS: true,
     allowTaint: true,
-    backgroundColor: '#ffffff',
+    backgroundColor: null,
     logging: false,
-    width: el.scrollWidth,
-    height: el.scrollHeight,
-    windowWidth: el.scrollWidth,
+    width: w,
+    height: h,
+    windowWidth: w,
+    windowHeight: h,
   })
 }
 
@@ -92,11 +95,12 @@ async function exportImage() {
     <!-- Resume -->
     <div class="flex-1 overflow-y-auto py-8 px-5" style="background:#d8d8d8;">
       <div
-        ref="resumeRef"
         class="rounded-xl overflow-hidden"
         style="box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);"
       >
-        <component :is="currentTemplate().component" :data="store.data" />
+        <div ref="resumeRef">
+          <component :is="currentTemplate().component" :data="store.data" />
+        </div>
       </div>
     </div>
 
