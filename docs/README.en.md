@@ -6,6 +6,10 @@
 </p>
 
 <p align="center">
+  <a href="https://hairstylist-resume-maker.vercel.app" target="_blank"><b>👉 Try it at hairstylist-resume-maker.vercel.app</b></a>
+</p>
+
+<p align="center">
   <a href="../README.md">한국어</a> ·
   <a href="./README.ja.md">日本語</a>
 </p>
@@ -45,20 +49,6 @@ Name → Date of Birth → Gender → Phone
 | Minimal | Dark | Warm | Bold |
 |---------|------|------|------|
 | White, clean | Dark bg, gold accents | Pastel, friendly | Indigo block, trendy |
-
----
-
-## Getting Started
-
-```bash
-git clone https://github.com/Derek-94/hairstylist-resume-maker.git
-cd hairstylist-resume-maker
-
-pnpm install
-pnpm dev
-```
-
-Open `http://localhost:5173` in your browser.
 
 ---
 

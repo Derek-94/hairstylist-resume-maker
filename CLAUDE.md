@@ -134,12 +134,21 @@ pnpm build       # 프로덕션 빌드
 
 ---
 
+## 배포
+- **플랫폼**: Vercel
+- **도메인**: https://hairstylist-resume-maker.vercel.app
+- **저장소**: https://github.com/Derek-94/hairstylist-resume-maker
+- main 브랜치 푸쉬 시 자동 배포
+
+---
+
 ## 앞으로 할 것들 (TODO)
-- [ ] Stitch(stitch.withgoogle.com)로 4개 템플릿 디자인 시안 생성 → 현재 코드 디자인 교체
-- [ ] PDF 출력 품질 개선 (현재 html2canvas 기본값)
+- [ ] 보유 기술 태그 저장 품질 개선 (html2canvas 렌더링 버그 — 현재 미해결)
 - [ ] 모바일 실기기 테스트
-- [ ] 보유 기술 커스텀 입력 추가 (목록에 없는 기술)
-- [ ] 배포 (Vercel 또는 Netlify 추천 — 백엔드 없으므로 정적 배포 가능)
+- [x] 보유 기술 커스텀 입력 추가 (목록에 없는 기술 직접 입력 가능)
+- [x] 배포 완료 (Vercel — hairstylist-resume-maker.vercel.app)
+- [x] PDF + 이미지 동시 저장 지원
+- [x] Stitch MCP 연동 (실제 디자인 참조용으로 활용)
 
 ---
 
@@ -162,9 +171,24 @@ pnpm build       # 프로덕션 빌드
 데이터 저장 불필요. 브라우저에서 base64로 이미지 처리 후 PDF 추출까지 완결.
 서버 비용 없이 정적 호스팅으로 배포 가능.
 
+### 결정 5: 저장 방식 2가지 (이미지 + PDF)
+- PDF: jsPDF로 콘텐츠 높이에 딱 맞는 커스텀 사이즈 (A4 고정 아님, 여백 없음)
+- 이미지: PNG로 저장 → 카카오톡 전송용
+- 캡처 대상: `resumeRef`는 `rounded-xl` 안쪽 div에 걸어야 함. 바깥에 걸면 흰 모서리 아티팩트 발생.
+- `backgroundColor: null` — 투명 배경으로 캡처해야 템플릿 자체 배경이 올바르게 나옴
+- `windowWidth: el.offsetWidth` 사용 (scrollWidth 아님)
+
+---
+
+## html2canvas 알려진 이슈
+- **보유 기술 태그 텍스트 정렬**: 한국어 폰트 baseline 계산이 브라우저와 달라 텍스트가 태그 박스 아래에 붙는 현상 발생. `display:flex`, `inline-flex`, `inline-block` + padding 모두 시도했으나 미해결 상태.
+- **flex gap 지원 불완전**: flex container의 `gap` 속성이 제대로 렌더링 안 되는 경우 있음. 태그 컨테이너는 `line-height` + `margin` 방식으로 우회.
+- **rounded-xl 아티팩트**: 캡처 대상 div에 border-radius 있으면 모서리에 backgroundColor 색으로 채워짐. 캡처 대상은 border-radius 없는 안쪽 div로 지정할 것.
+
 ---
 
 ## MCP 연동
 - **Google Stitch** MCP 등록 완료 (로컬 config)
   - URL: https://stitch.googleapis.com/mcp
-  - 템플릿 디자인 시안 생성에 활용 예정
+  - 기존 프로젝트 2개 확인: "Minimal & Clean Resume" (ID: 4706092503482431127), "Warm & Soft Resume" (ID: 2782408860081329317)
+  - 실제 템플릿 디자인은 코드에서 직접 구현함 (Stitch 시안 참조)

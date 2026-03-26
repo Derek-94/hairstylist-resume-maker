@@ -33,11 +33,11 @@ defineProps<{ data: ResumeData }>()
     <!-- 보유 기술 -->
     <div v-if="data.skills.length" style="background:#ffffff; margin:0 1rem 0.75rem; border-radius:1rem; padding:1.25rem; box-shadow:0 2px 12px rgba(164,48,73,0.06);">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#a43049; margin-bottom:0.75rem;">Expertise</p>
-      <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+      <div style="line-height:2.2;">
         <span
           v-for="skill in data.skills"
           :key="skill"
-          style="background:#ffd9e4; color:#a43049; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; font-weight:600; padding:0.3rem 0.8rem; border-radius:9999px; display:inline-flex; align-items:center; white-space:nowrap; max-width:48%; overflow:hidden; text-overflow:ellipsis;"
+          style="background:#ffd9e4; color:#a43049; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; font-weight:600; padding:0.25rem 0.8rem; border-radius:9999px; display:inline-block; white-space:nowrap; max-width:48%; overflow:hidden; text-overflow:ellipsis; margin:0 0.35rem 0 0;"
         >{{ skill }}</span>
       </div>
     </div>

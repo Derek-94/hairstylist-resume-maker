@@ -6,6 +6,10 @@
 </p>
 
 <p align="center">
+  <a href="https://hairstylist-resume-maker.vercel.app" target="_blank"><b>👉 hairstylist-resume-maker.vercel.app で今すぐ試せます</b></a>
+</p>
+
+<p align="center">
   <a href="../README.md">한국어</a> ·
   <a href="./README.en.md">English</a>
 </p>
@@ -45,20 +49,6 @@
 | ミニマル | ダーク | ウォーム | ボールド |
 |----------|--------|----------|----------|
 | 白背景、シンプル | ダーク、ゴールドアクセント | パステル、親しみやすい | インディゴ、トレンディ |
-
----
-
-## はじめ方
-
-```bash
-git clone https://github.com/Derek-94/hairstylist-resume-maker.git
-cd hairstylist-resume-maker
-
-pnpm install
-pnpm dev
-```
-
-ブラウザで `http://localhost:5173` を開いてください。
 
 ---
 
