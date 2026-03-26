@@ -151,7 +151,6 @@ function skip() {
               @blur="($event.target as HTMLInputElement).style.borderBottomColor = 'rgba(255,255,255,0.15)'"
               @keyup.enter="next"
             />
-            <style>input::placeholder { color: rgba(255,255,255,0.2); }</style>
           </template>
 
           <!-- Textarea -->
@@ -168,7 +167,6 @@ function skip() {
               @focus="($event.target as HTMLTextAreaElement).style.borderColor = '#a78bfa'"
               @blur="($event.target as HTMLTextAreaElement).style.borderColor = 'rgba(255,255,255,0.12)'"
             />
-            <style>textarea::placeholder { color: rgba(255,255,255,0.2); }</style>
           </template>
 
           <!-- Radio -->
@@ -318,6 +316,11 @@ function skip() {
 .slide-back-leave-to {
   opacity: 0;
   transform: translateX(40px);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.2);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
