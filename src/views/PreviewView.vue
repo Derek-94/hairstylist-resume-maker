@@ -10,7 +10,6 @@ import TemplateBold from '@/components/templates/TemplateBold.vue'
 const router = useRouter()
 const store = useResumeStore()
 const resumeRef = ref<HTMLElement | null>(null)
-const isExporting = ref(false)
 
 const templates = [
   { id: 0, name: '미니멀', component: TemplateMinimal },
@@ -28,43 +27,51 @@ function selectTemplate(id: number) {
 
 const currentTemplate = () => templates[selectedId.value]
 
+const exportingType = ref<'pdf' | 'image' | null>(null)
+
+async function getCanvas() {
+  await document.fonts.ready
+  const html2canvas = (await import('html2canvas')).default
+  return html2canvas(resumeRef.value!, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+  })
+}
+
 async function exportPDF() {
-  if (!resumeRef.value || isExporting.value) return
-  isExporting.value = true
-
+  if (!resumeRef.value || exportingType.value) return
+  exportingType.value = 'pdf'
   try {
-    await document.fonts.ready
-
-    const html2canvas = (await import('html2canvas')).default
+    const canvas = await getCanvas()
     const { jsPDF } = await import('jspdf')
-
-    const canvas = await html2canvas(resumeRef.value, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-    })
-
     const imgData = canvas.toDataURL('image/png')
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' })
-    const pageWidth = pdf.internal.pageSize.getWidth()
-    const pageHeight = pdf.internal.pageSize.getHeight()
-    const imgHeight = (canvas.height * pageWidth) / canvas.width
-
-    let remainingHeight = imgHeight
-    let yOffset = 0
-
-    while (remainingHeight > 0) {
-      pdf.addImage(imgData, 'PNG', 0, yOffset, pageWidth, imgHeight)
-      remainingHeight -= pageHeight
-      yOffset -= pageHeight
-      if (remainingHeight > 0) pdf.addPage()
-    }
-
+    // 콘텐츠 크기에 맞는 커스텀 PDF (A4 고정 아님)
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [canvas.width / 2, canvas.height / 2],
+    })
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
     pdf.save(`${store.data.name || '이력서'}_이력서.pdf`)
   } finally {
-    isExporting.value = false
+    exportingType.value = null
+  }
+}
+
+async function exportImage() {
+  if (!resumeRef.value || exportingType.value) return
+  exportingType.value = 'image'
+  try {
+    const canvas = await getCanvas()
+    const link = document.createElement('a')
+    link.download = `${store.data.name || '이력서'}_이력서.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  } finally {
+    exportingType.value = null
   }
 }
 </script>
@@ -107,14 +114,23 @@ async function exportPDF() {
       </div>
     </div>
 
-    <!-- Export button -->
-    <div class="px-4 pb-8 pt-3 bg-white">
+    <!-- Export buttons -->
+    <div class="px-4 pb-8 pt-3 bg-white flex gap-3">
+      <button
+        @click="exportImage"
+        :disabled="!!exportingType"
+        class="flex-1 py-4 rounded-2xl font-semibold text-base transition-all disabled:opacity-50"
+        style="background:#f3f3f3; color:#1a1c1c;"
+      >
+        {{ exportingType === 'image' ? '저장 중...' : '🖼 이미지 저장' }}
+      </button>
       <button
         @click="exportPDF"
-        :disabled="isExporting"
-        class="w-full py-4 bg-gray-800 text-white rounded-2xl font-semibold text-lg disabled:opacity-50"
+        :disabled="!!exportingType"
+        class="flex-1 py-4 rounded-2xl font-semibold text-base transition-all disabled:opacity-50"
+        style="background:#1a1c1c; color:#ffffff;"
       >
-        {{ isExporting ? '저장 중...' : 'PDF로 저장하기' }}
+        {{ exportingType === 'pdf' ? '저장 중...' : '📄 PDF 저장' }}
       </button>
     </div>
   </div>
