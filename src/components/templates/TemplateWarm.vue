@@ -27,7 +27,7 @@ defineProps<{ data: ResumeData }>()
 
     <!-- 자기소개 -->
     <div v-if="data.introduction" style="background:#ffffff; margin:0 1rem 0.75rem; border-radius:1rem; padding:1rem 1.25rem; box-shadow:0 2px 12px rgba(164,48,73,0.06);">
-      <p style="font-size:0.875rem; line-height:1.75; color:#595c5d;">{{ data.introduction }}</p>
+      <p style="font-size:0.875rem; line-height:1.75; color:#595c5d; word-break:break-word; overflow-wrap:break-word;">{{ data.introduction }}</p>
     </div>
 
     <!-- 보유 기술 -->
@@ -55,13 +55,13 @@ defineProps<{ data: ResumeData }>()
     <!-- 경력 -->
     <div v-if="data.career" style="background:#ffffff; margin:0 1rem 0.75rem; border-radius:1rem; padding:1.25rem; box-shadow:0 2px 12px rgba(164,48,73,0.06);">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#a43049; margin-bottom:0.75rem;">Career</p>
-      <p style="font-size:0.875rem; line-height:1.75; color:#595c5d; white-space:pre-line;">{{ data.career }}</p>
+      <p style="font-size:0.875rem; line-height:1.75; color:#595c5d; white-space:pre-line; word-break:break-word; overflow-wrap:break-word;">{{ data.career }}</p>
     </div>
 
     <!-- 자격증 -->
     <div v-if="data.certifications" style="background:#ffffff; margin:0 1rem 1rem; border-radius:1rem; padding:1.25rem; box-shadow:0 2px 12px rgba(164,48,73,0.06);">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#a43049; margin-bottom:0.75rem;">Certifications</p>
-      <p style="font-size:0.875rem; line-height:1.75; color:#595c5d; white-space:pre-line;">{{ data.certifications }}</p>
+      <p style="font-size:0.875rem; line-height:1.75; color:#595c5d; white-space:pre-line; word-break:break-word; overflow-wrap:break-word;">{{ data.certifications }}</p>
     </div>
 
   </div>

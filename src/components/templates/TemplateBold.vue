@@ -32,7 +32,7 @@ defineProps<{ data: ResumeData }>()
 
     <!-- 자기소개 -->
     <div v-if="data.introduction" style="padding:1.25rem 1.5rem; background:#f3f3f3;">
-      <p style="font-size:0.875rem; line-height:1.7; color:#444748;">{{ data.introduction }}</p>
+      <p style="font-size:0.875rem; line-height:1.7; color:#444748; word-break:break-word; overflow-wrap:break-word;">{{ data.introduction }}</p>
     </div>
 
     <!-- 보유 기술 -->
@@ -70,7 +70,7 @@ defineProps<{ data: ResumeData }>()
         Career
       </p>
       <div style="border-left:3px solid #fed65b; padding-left:1rem;">
-        <p style="font-size:0.875rem; line-height:1.7; color:#444748; white-space:pre-line;">{{ data.career }}</p>
+        <p style="font-size:0.875rem; line-height:1.7; color:#444748; white-space:pre-line; word-break:break-word; overflow-wrap:break-word;">{{ data.career }}</p>
       </div>
     </div>
 
@@ -80,7 +80,7 @@ defineProps<{ data: ResumeData }>()
         <span style="display:inline-block; width:16px; height:3px; background:#fed65b; border-radius:2px;"></span>
         Certifications
       </p>
-      <p style="font-size:0.875rem; line-height:1.7; color:#444748; white-space:pre-line;">{{ data.certifications }}</p>
+      <p style="font-size:0.875rem; line-height:1.7; color:#444748; white-space:pre-line; word-break:break-word; overflow-wrap:break-word;">{{ data.certifications }}</p>
     </div>
 
   </div>
