@@ -18,8 +18,8 @@ defineProps<{ data: ResumeData }>()
     </div>
 
     <!-- 프로필 사진 (floating) -->
-    <div style="display:flex; justify-content:flex-end; padding:0 1.5rem; margin-top:-2.5rem; margin-bottom:0.5rem;">
-      <div style="width:80px; height:80px; border-radius:9999px; overflow:hidden; background:#ffcdd2; border:3px solid #ffffff; flex-shrink:0; box-shadow:0 4px 16px rgba(164,48,73,0.2);">
+    <div style="display:flex; justify-content:flex-end; padding:0 1.5rem; margin-top:-2.5rem; margin-bottom:0.5rem; position:relative; z-index:10;">
+      <div style="width:80px; height:80px; border-radius:9999px; overflow:hidden; background:#ffcdd2; border:3px solid #ffffff; flex-shrink:0; box-shadow:0 4px 20px rgba(164,48,73,0.25);">
         <img v-if="data.profileImage" :src="data.profileImage" style="width:100%;height:100%;object-fit:cover;" />
         <div v-else style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;">👤</div>
       </div>
