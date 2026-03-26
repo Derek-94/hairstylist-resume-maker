@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useResumeStore, SKILL_OPTIONS } from '@/stores/resume'
 
@@ -10,14 +10,13 @@ const store = useResumeStore()
 const step = computed(() => Number(route.params.step))
 const totalSteps = 10
 const direction = ref<'forward' | 'back'>('forward')
-
 const progress = computed(() => (step.value / totalSteps) * 100)
 
 const steps = [
   { field: 'name',           label: '이름이 무엇인가요?',           type: 'text',        placeholder: '홍길동',                                              required: true  },
-  { field: 'birthDate',      label: '생년월일을 알려주세요',         type: 'date',        placeholder: '',                                                    required: true  },
+  { field: 'birthDate',      label: '생년월일을 알려주세요',         type: 'date-custom', placeholder: 'yyyy / mm / dd',                                      required: true  },
   { field: 'gender',         label: '성별을 선택해주세요',           type: 'radio',       options: ['여성', '남성'],                                          required: true  },
-  { field: 'phone',          label: '연락처를 입력해주세요',         type: 'tel',         placeholder: '010-0000-0000',                                       required: true  },
+  { field: 'phone',          label: '연락처를 입력해주세요',         type: 'phone',       placeholder: '010-0000-0000',                                       required: true  },
   { field: 'profileImage',   label: '프로필 사진을 올려주세요',      type: 'image-single',placeholder: '',                                                    required: true  },
   { field: 'skills',         label: '보유 기술을 선택해주세요',      type: 'checkbox',    options: SKILL_OPTIONS,                                             required: true  },
   { field: 'portfolioImages',label: '포트폴리오 사진을 올려주세요',  type: 'image-multi', placeholder: '',                                                    required: false },
@@ -39,6 +38,57 @@ const currentValue = computed({
   }
 })
 
+// ── 생년월일 마스킹 (yyyy/mm/dd) ──────────────────────────────
+function handleDateInput(e: Event) {
+  const input = e.target as HTMLInputElement
+  const raw = input.value.replace(/\D/g, '').slice(0, 8)
+  let formatted = raw
+  if (raw.length > 4) formatted = raw.slice(0, 4) + '/' + raw.slice(4)
+  if (raw.length > 6) formatted = raw.slice(0, 4) + '/' + raw.slice(4, 6) + '/' + raw.slice(6)
+  input.value = formatted
+  store.update({ birthDate: formatted })
+}
+
+const isDateValid = computed(() => {
+  const v = store.data.birthDate.replace(/\D/g, '')
+  return v.length === 8
+})
+
+// ── 연락처 마스킹 (010-0000-0000) ──────────────────────────────
+function handlePhoneInput(e: Event) {
+  const input = e.target as HTMLInputElement
+  const raw = input.value.replace(/\D/g, '').slice(0, 11)
+  let formatted = raw
+  if (raw.length > 3) formatted = raw.slice(0, 3) + '-' + raw.slice(3)
+  if (raw.length > 7) formatted = raw.slice(0, 3) + '-' + raw.slice(3, 7) + '-' + raw.slice(7)
+  input.value = formatted
+  store.update({ phone: formatted })
+}
+
+const isPhoneValid = computed(() => {
+  return /^\d{3}-\d{4}-\d{4}$/.test(store.data.phone)
+})
+
+// ── 기술 ──────────────────────────────────────────────────────
+const customSkillInput = ref('')
+
+function toggleSkill(skill: string) {
+  const current = [...store.data.skills]
+  const idx = current.indexOf(skill)
+  if (idx >= 0) current.splice(idx, 1)
+  else current.push(skill)
+  store.update({ skills: current })
+}
+
+function addCustomSkill() {
+  const val = customSkillInput.value.trim()
+  if (!val) return
+  if (store.data.skills.includes(val)) return
+  store.update({ skills: [...store.data.skills, val] })
+  customSkillInput.value = ''
+}
+
+// ── 이미지 ────────────────────────────────────────────────────
 function handleImageSingle(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
@@ -65,20 +115,15 @@ function removePortfolioImage(index: number) {
   store.update({ portfolioImages: images })
 }
 
-function toggleSkill(skill: string) {
-  const current = [...store.data.skills]
-  const idx = current.indexOf(skill)
-  if (idx >= 0) current.splice(idx, 1)
-  else current.push(skill)
-  store.update({ skills: current })
-}
-
+// ── 진행 ──────────────────────────────────────────────────────
 function canProceed() {
   if (!currentStep.value?.required) return true
-  const val = currentValue.value
-  if (currentStep.value.field === 'skills') return (val as string[]).length > 0
-  if (currentStep.value.field === 'profileImage') return val !== null
-  return String(val).trim().length > 0
+  const field = currentStep.value.field
+  if (field === 'skills') return store.data.skills.length > 0
+  if (field === 'profileImage') return store.data.profileImage !== null
+  if (field === 'birthDate') return isDateValid.value
+  if (field === 'phone') return isPhoneValid.value
+  return String(currentValue.value).trim().length > 0
 }
 
 function next() {
@@ -136,21 +181,57 @@ function skip() {
             {{ currentStep.label }}
           </h1>
 
-          <!-- Text / Tel / Date -->
-          <template v-if="['text', 'tel', 'date'].includes(currentStep.type)">
+          <!-- Text -->
+          <template v-if="currentStep.type === 'text'">
             <input
               v-model="currentValue"
-              :type="currentStep.type"
+              type="text"
               :placeholder="currentStep.placeholder"
-              class="w-full outline-none text-xl font-medium pb-3 transition-all duration-200 bg-transparent"
-              style="
-                border-bottom: 1.5px solid rgba(255,255,255,0.15);
-                color: #fff;
-              "
-              @focus="($event.target as HTMLInputElement).style.borderBottomColor = '#a78bfa'"
-              @blur="($event.target as HTMLInputElement).style.borderBottomColor = 'rgba(255,255,255,0.15)'"
+              class="survey-input w-full outline-none text-xl font-medium pb-3 bg-transparent"
               @keyup.enter="next"
             />
+          </template>
+
+          <!-- 생년월일 커스텀 마스킹 -->
+          <template v-else-if="currentStep.type === 'date-custom'">
+            <input
+              :value="store.data.birthDate"
+              type="text"
+              inputmode="numeric"
+              placeholder="yyyy / mm / dd"
+              maxlength="10"
+              class="survey-input w-full outline-none text-xl font-medium pb-3 bg-transparent tracking-widest"
+              @input="handleDateInput"
+              @keyup.enter="next"
+            />
+            <p class="mt-3 text-xs transition-all duration-200"
+              :style="store.data.birthDate && !isDateValid
+                ? 'color: #f472b6;'
+                : 'color: rgba(255,255,255,0.2);'"
+            >
+              {{ store.data.birthDate && !isDateValid ? '날짜를 끝까지 입력해주세요' : '숫자만 입력하면 자동으로 형식이 완성돼요' }}
+            </p>
+          </template>
+
+          <!-- 연락처 마스킹 -->
+          <template v-else-if="currentStep.type === 'phone'">
+            <input
+              :value="store.data.phone"
+              type="tel"
+              inputmode="numeric"
+              placeholder="010-0000-0000"
+              maxlength="13"
+              class="survey-input w-full outline-none text-xl font-medium pb-3 bg-transparent tracking-widest"
+              @input="handlePhoneInput"
+              @keyup.enter="next"
+            />
+            <p class="mt-3 text-xs transition-all duration-200"
+              :style="store.data.phone && !isPhoneValid
+                ? 'color: #f472b6;'
+                : 'color: rgba(255,255,255,0.2);'"
+            >
+              {{ store.data.phone && !isPhoneValid ? '올바른 번호 형식이 아니에요 (010-0000-0000)' : '숫자만 입력하면 자동으로 형식이 완성돼요' }}
+            </p>
           </template>
 
           <!-- Textarea -->
@@ -159,13 +240,7 @@ function skip() {
               v-model="currentValue"
               :placeholder="currentStep.placeholder"
               rows="4"
-              class="w-full outline-none text-base font-medium p-4 rounded-2xl resize-none transition-all duration-200 bg-transparent"
-              style="
-                border: 1.5px solid rgba(255,255,255,0.12);
-                color: #fff;
-              "
-              @focus="($event.target as HTMLTextAreaElement).style.borderColor = '#a78bfa'"
-              @blur="($event.target as HTMLTextAreaElement).style.borderColor = 'rgba(255,255,255,0.12)'"
+              class="survey-textarea w-full outline-none text-base font-medium p-4 rounded-2xl resize-none bg-transparent"
             />
           </template>
 
@@ -184,11 +259,11 @@ function skip() {
             </div>
           </template>
 
-          <!-- Checkbox (skills) -->
+          <!-- 기술 선택 + 직접 추가 -->
           <template v-else-if="currentStep.type === 'checkbox'">
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2 mb-5">
               <button
-                v-for="skill in currentStep.options"
+                v-for="skill in [...(currentStep.options ?? []), ...store.data.skills.filter(s => !(currentStep.options ?? []).includes(s))]"
                 :key="skill"
                 @click="toggleSkill(skill)"
                 class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
@@ -196,6 +271,26 @@ function skip() {
                   ? 'background: linear-gradient(135deg, #a78bfa, #f472b6); color: #fff; border: 1.5px solid transparent;'
                   : 'background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); border: 1.5px solid rgba(255,255,255,0.1);'"
               >{{ skill }}</button>
+            </div>
+
+            <!-- 직접 추가 -->
+            <div class="flex gap-2 mt-2">
+              <input
+                v-model="customSkillInput"
+                type="text"
+                placeholder="직접 입력"
+                maxlength="12"
+                class="flex-1 outline-none text-sm px-4 py-2.5 rounded-full bg-transparent"
+                style="border: 1.5px solid rgba(255,255,255,0.12); color: #fff;"
+                @keyup.enter="addCustomSkill"
+              />
+              <button
+                @click="addCustomSkill"
+                class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200"
+                :style="customSkillInput.trim()
+                  ? 'background: rgba(167,139,250,0.2); color: #a78bfa; border: 1.5px solid #a78bfa;'
+                  : 'background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.08);'"
+              >+ 추가</button>
             </div>
           </template>
 
@@ -224,7 +319,7 @@ function skip() {
             </label>
           </template>
 
-          <!-- Multi image (portfolio) -->
+          <!-- Multi image -->
           <template v-else-if="currentStep.type === 'image-multi'">
             <div class="grid grid-cols-3 gap-2">
               <div
@@ -240,7 +335,7 @@ function skip() {
                 >✕</button>
               </div>
               <label
-                class="aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer transition-all duration-200"
+                class="aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer"
                 style="background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.15);"
               >
                 <span class="text-2xl" style="color: rgba(255,255,255,0.3);">+</span>
@@ -286,44 +381,41 @@ function skip() {
 </template>
 
 <style scoped>
-/* Forward: 새 화면이 오른쪽에서 들어오고, 현재 화면은 왼쪽으로 나감 */
 .slide-forward-enter-active,
 .slide-forward-leave-active {
   transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   width: 100%;
 }
-.slide-forward-enter-from {
-  opacity: 0;
-  transform: translateX(40px);
-}
-.slide-forward-leave-to {
-  opacity: 0;
-  transform: translateX(-40px);
-}
+.slide-forward-enter-from { opacity: 0; transform: translateX(40px); }
+.slide-forward-leave-to  { opacity: 0; transform: translateX(-40px); }
 
-/* Back: 새 화면이 왼쪽에서 들어오고, 현재 화면은 오른쪽으로 나감 */
 .slide-back-enter-active,
 .slide-back-leave-active {
   transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   width: 100%;
 }
-.slide-back-enter-from {
-  opacity: 0;
-  transform: translateX(-40px);
-}
-.slide-back-leave-to {
-  opacity: 0;
-  transform: translateX(40px);
-}
+.slide-back-enter-from { opacity: 0; transform: translateX(-40px); }
+.slide-back-leave-to  { opacity: 0; transform: translateX(40px); }
 
-input::placeholder,
-textarea::placeholder {
+.survey-input {
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transition: border-color 0.2s;
+}
+.survey-input:focus { border-bottom-color: #a78bfa; }
+
+.survey-textarea {
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transition: border-color 0.2s;
+}
+.survey-textarea:focus { border-color: #a78bfa; }
+
+.survey-input::placeholder,
+.survey-textarea::placeholder,
+input::placeholder {
   color: rgba(255, 255, 255, 0.2);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) opacity(0.3);
 }
 </style>
