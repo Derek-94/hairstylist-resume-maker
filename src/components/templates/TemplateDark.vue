@@ -4,61 +4,67 @@ defineProps<{ data: ResumeData }>()
 </script>
 
 <template>
-  <div class="bg-gray-900 w-full font-sans text-white p-6">
-    <!-- Header -->
-    <div class="flex flex-col items-center text-center mb-6">
-      <div class="w-24 h-24 rounded-full overflow-hidden bg-gray-700 mb-3 border-2 border-yellow-400">
-        <img v-if="data.profileImage" :src="data.profileImage" class="w-full h-full object-cover" />
-        <div v-else class="w-full h-full flex items-center justify-center text-gray-500 text-3xl">👤</div>
-      </div>
-      <h1 class="text-2xl font-bold tracking-wide">{{ data.name || '이름' }}</h1>
-      <p class="text-sm text-gray-400 mt-1">{{ data.birthDate }} {{ data.gender ? `· ${data.gender}` : '' }}</p>
-      <p class="text-sm text-yellow-400">{{ data.phone }}</p>
-    </div>
+  <div style="background:#121212; font-family:'Manrope',sans-serif; color:#e5e2e1; width:100%;">
 
-    <div class="border-t border-gray-700 mb-5" />
-
-    <!-- Introduction -->
-    <div v-if="data.introduction" class="mb-5">
-      <p class="text-sm text-gray-300 leading-relaxed text-center italic">{{ data.introduction }}</p>
-    </div>
-
-    <!-- Skills -->
-    <div v-if="data.skills.length" class="mb-5">
-      <h2 class="text-xs font-semibold text-yellow-400 uppercase tracking-widest mb-2">보유 기술</h2>
-      <div class="flex flex-wrap gap-2">
-        <span
-          v-for="skill in data.skills"
-          :key="skill"
-          class="px-3 py-1 border border-yellow-400 text-yellow-400 text-sm rounded-full"
-        >{{ skill }}</span>
-      </div>
-    </div>
-
-    <!-- Portfolio -->
-    <div v-if="data.portfolioImages.length" class="mb-5">
-      <h2 class="text-xs font-semibold text-yellow-400 uppercase tracking-widest mb-2">포트폴리오</h2>
-      <div class="grid grid-cols-3 gap-2">
-        <div
-          v-for="(img, i) in data.portfolioImages"
-          :key="i"
-          class="aspect-square rounded-lg overflow-hidden"
-        >
-          <img :src="img" class="w-full h-full object-cover" />
+    <!-- Hero -->
+    <div style="background:linear-gradient(160deg,#1e1e1e 0%,#121212 100%); padding:2.5rem 1.5rem 2rem;">
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:1rem;">
+        <div style="width:96px; height:96px; border-radius:9999px; overflow:hidden; background:#2a2a2a; border:2px solid #e9c349; flex-shrink:0;">
+          <img v-if="data.profileImage" :src="data.profileImage" style="width:100%;height:100%;object-fit:cover;" />
+          <div v-else style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;">👤</div>
+        </div>
+        <div>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:#e9c349; margin-bottom:0.4rem;">Hair Stylist</p>
+          <h1 style="font-family:'Noto Serif KR',serif; font-size:1.75rem; font-weight:700; letter-spacing:-0.02em; color:#ffffff;">{{ data.name || '이름' }}</h1>
+          <div style="display:flex; justify-content:center; gap:0.75rem; margin-top:0.6rem; flex-wrap:wrap;">
+            <span v-if="data.birthDate" style="font-size:0.7rem; color:#888; letter-spacing:0.04em;">{{ data.birthDate }}</span>
+            <span v-if="data.gender" style="font-size:0.7rem; color:#888;">{{ data.gender }}</span>
+            <span v-if="data.phone" style="font-size:0.7rem; color:#e9c349; font-weight:600;">{{ data.phone }}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Career -->
-    <div v-if="data.career" class="mb-5">
-      <h2 class="text-xs font-semibold text-yellow-400 uppercase tracking-widest mb-2">경력사항</h2>
-      <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{{ data.career }}</p>
+    <!-- 자기소개 -->
+    <div v-if="data.introduction" style="padding:1.25rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
+      <p style="font-size:0.875rem; line-height:1.8; color:#aaa; text-align:center; font-style:italic;">{{ data.introduction }}</p>
     </div>
 
-    <!-- Certifications -->
-    <div v-if="data.certifications">
-      <h2 class="text-xs font-semibold text-yellow-400 uppercase tracking-widest mb-2">자격증</h2>
-      <p class="text-sm text-gray-300 whitespace-pre-line">{{ data.certifications }}</p>
+    <!-- 보유 기술 -->
+    <div v-if="data.skills.length" style="padding:1.5rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#e9c349; margin-bottom:0.875rem;">Expertise</p>
+      <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+        <span
+          v-for="skill in data.skills"
+          :key="skill"
+          style="background:rgba(233,195,73,0.1); color:#e9c349; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.04em; padding:0.35rem 0.9rem; border-radius:9999px; border:1px solid rgba(233,195,73,0.25);"
+        >{{ skill }}</span>
+      </div>
     </div>
+
+    <!-- 포트폴리오 -->
+    <div v-if="data.portfolioImages.length" style="padding:1.5rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#e9c349; margin-bottom:0.875rem;">Portfolio</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem;">
+        <div v-for="(img, i) in data.portfolioImages" :key="i" style="aspect-ratio:1; border-radius:0.5rem; overflow:hidden;">
+          <img :src="img" style="width:100%;height:100%;object-fit:cover;" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 경력 -->
+    <div v-if="data.career" style="padding:1.5rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#e9c349; margin-bottom:0.875rem;">Career</p>
+      <div style="border-left:2px solid rgba(233,195,73,0.3); padding-left:1rem;">
+        <p style="font-size:0.875rem; line-height:1.8; color:#aaa; white-space:pre-line;">{{ data.career }}</p>
+      </div>
+    </div>
+
+    <!-- 자격증 -->
+    <div v-if="data.certifications" style="padding:1.5rem 1.5rem;">
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#e9c349; margin-bottom:0.875rem;">Certifications</p>
+      <p style="font-size:0.875rem; line-height:1.8; color:#aaa; white-space:pre-line;">{{ data.certifications }}</p>
+    </div>
+
   </div>
 </template>
