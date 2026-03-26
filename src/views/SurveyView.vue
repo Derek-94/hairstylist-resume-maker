@@ -49,10 +49,28 @@ function handleDateInput(e: Event) {
   store.update({ birthDate: formatted })
 }
 
-const isDateValid = computed(() => {
-  const v = store.data.birthDate.replace(/\D/g, '')
-  return v.length === 8
+const dateValidation = computed(() => {
+  const raw = store.data.birthDate.replace(/\D/g, '')
+  if (raw.length === 0) return { valid: false, message: '' }
+
+  const year  = parseInt(raw.slice(0, 4))
+  const month = parseInt(raw.slice(4, 6) || '0')
+  const day   = parseInt(raw.slice(6, 8) || '0')
+
+  if (raw.length >= 4 && (year < 1900 || year > new Date().getFullYear()))
+    return { valid: false, message: '올바른 연도를 입력해주세요' }
+  if (raw.length >= 6 && (month < 1 || month > 12))
+    return { valid: false, message: '월은 01~12 사이여야 해요' }
+  if (raw.length === 8) {
+    const maxDay = new Date(year, month, 0).getDate()
+    if (day < 1 || day > maxDay)
+      return { valid: false, message: `${month}월은 ${maxDay}일까지 있어요` }
+    return { valid: true, message: '' }
+  }
+  return { valid: false, message: '날짜를 끝까지 입력해주세요' }
 })
+
+const isDateValid = computed(() => dateValidation.value.valid)
 
 // ── 연락처 마스킹 (010-0000-0000) ──────────────────────────────
 function handlePhoneInput(e: Event) {
@@ -205,11 +223,9 @@ function skip() {
               @keyup.enter="next"
             />
             <p class="mt-3 text-xs transition-all duration-200"
-              :style="store.data.birthDate && !isDateValid
-                ? 'color: #f472b6;'
-                : 'color: rgba(255,255,255,0.2);'"
+              :style="dateValidation.message ? 'color: #f472b6;' : 'color: rgba(255,255,255,0.2);'"
             >
-              {{ store.data.birthDate && !isDateValid ? '날짜를 끝까지 입력해주세요' : '숫자만 입력하면 자동으로 형식이 완성돼요' }}
+              {{ dateValidation.message || '숫자만 입력하면 자동으로 형식이 완성돼요' }}
             </p>
           </template>
 
