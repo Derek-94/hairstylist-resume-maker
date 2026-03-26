@@ -65,8 +65,12 @@ async function exportPDF() {
     </div>
 
     <!-- Resume -->
-    <div class="flex-1 overflow-y-auto py-4 px-4">
-      <div ref="resumeRef" class="rounded-2xl overflow-hidden shadow-sm">
+    <div class="flex-1 overflow-y-auto py-8 px-5" style="background:#d8d8d8;">
+      <div
+        ref="resumeRef"
+        class="rounded-xl overflow-hidden"
+        style="box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);"
+      >
         <component :is="currentTemplate().component" :data="store.data" />
       </div>
     </div>
