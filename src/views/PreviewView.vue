@@ -29,6 +29,8 @@ const currentTemplate = () => templates[selectedId.value]
 
 const exportingType = ref<'pdf' | 'image' | null>(null)
 
+const templateBgColors = ['#f9f9f9', '#121212', '#f5f6f7', '#ffffff']
+
 async function getCanvas() {
   await document.fonts.ready
   const el = resumeRef.value!
@@ -39,7 +41,7 @@ async function getCanvas() {
     scale: 2,
     useCORS: true,
     allowTaint: true,
-    backgroundColor: null,
+    backgroundColor: templateBgColors[selectedId.value],
     logging: false,
     width: w,
     height: h,
