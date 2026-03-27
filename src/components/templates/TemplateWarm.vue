@@ -20,7 +20,7 @@ defineProps<{ data: ResumeData }>()
     <!-- 프로필 사진 (floating) -->
     <div style="display:flex; justify-content:flex-end; padding:0 1.5rem; margin-top:-2.5rem; margin-bottom:0.5rem; position:relative; z-index:10;">
       <div style="width:80px; height:80px; border-radius:9999px; overflow:hidden; background:#ffcdd2; border:3px solid #ffffff; flex-shrink:0; box-shadow:0 4px 20px rgba(164,48,73,0.25);">
-        <img v-if="data.profileImage" :src="data.profileImage" style="width:100%;height:100%;object-fit:cover;" />
+        <div v-if="data.profileImage" :style="`background-image:url('${data.profileImage}');background-size:cover;background-position:center;width:100%;height:100%;`"></div>
         <div v-else style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;">👤</div>
       </div>
     </div>
@@ -37,8 +37,8 @@ defineProps<{ data: ResumeData }>()
         <span
           v-for="skill in data.skills"
           :key="skill"
-          style="background:#ffd9e4; color:#a43049; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; font-weight:600; padding:0.25rem 0.8rem; border-radius:9999px; display:inline-block; white-space:nowrap; max-width:48%; overflow:hidden; text-overflow:ellipsis; margin:0 0.35rem 0 0;"
-        >{{ skill }}</span>
+          style="background:#ffd9e4; color:#a43049; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; font-weight:600; padding:0.3rem 0.8rem 0.2rem; border-radius:9999px; display:inline-block; white-space:nowrap; max-width:48%; overflow:hidden; text-overflow:ellipsis; margin:0 0.35rem 0 0; vertical-align:middle;"
+        ><span style="position:relative; top:-2px; display:block; line-height:1.2;">{{ skill }}</span></span>
       </div>
     </div>
 
@@ -46,8 +46,8 @@ defineProps<{ data: ResumeData }>()
     <div v-if="data.portfolioImages.length" style="background:#ffffff; margin:0 1rem 0.75rem; border-radius:1rem; padding:1.25rem; box-shadow:0 2px 12px rgba(164,48,73,0.06);">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#a43049; margin-bottom:0.75rem;">Portfolio</p>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem;">
-        <div v-for="(img, i) in data.portfolioImages" :key="i" style="aspect-ratio:1; border-radius:0.75rem; overflow:hidden;">
-          <img :src="img" style="width:100%;height:100%;object-fit:cover;" />
+        <div v-for="(img, i) in data.portfolioImages" :key="i" style="position:relative; padding-bottom:100%; border-radius:0.75rem; overflow:hidden;">
+          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
         </div>
       </div>
     </div>

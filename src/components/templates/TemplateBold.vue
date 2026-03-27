@@ -10,7 +10,7 @@ defineProps<{ data: ResumeData }>()
     <div style="background:#181818; padding:2rem 1.5rem 1.75rem;">
       <div style="display:flex; align-items:center; gap:1.25rem;">
         <div style="width:80px; height:80px; border-radius:0.375rem; overflow:hidden; background:#2a2a2a; flex-shrink:0;">
-          <img v-if="data.profileImage" :src="data.profileImage" style="width:100%;height:100%;object-fit:cover;" />
+          <div v-if="data.profileImage" :style="`background-image:url('${data.profileImage}');background-size:cover;background-position:center;width:100%;height:100%;`"></div>
           <div v-else style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">👤</div>
         </div>
         <div>
@@ -45,8 +45,8 @@ defineProps<{ data: ResumeData }>()
         <span
           v-for="skill in data.skills"
           :key="skill"
-          style="background:#181818; color:#fed65b; font-size:0.7rem; font-weight:700; letter-spacing:0.05em; padding:0.25rem 0.75rem; border-radius:0.25rem; display:inline-block; white-space:nowrap; max-width:48%; overflow:hidden; text-overflow:ellipsis; margin:0 0.35rem 0 0;"
-        >{{ skill }}</span>
+          style="background:#181818; color:#fed65b; font-size:0.7rem; font-weight:700; letter-spacing:0.05em; padding:0.3rem 0.75rem 0.2rem; border-radius:0.25rem; display:inline-block; white-space:nowrap; max-width:48%; overflow:hidden; text-overflow:ellipsis; margin:0 0.35rem 0 0; vertical-align:middle;"
+        ><span style="position:relative; top:-2px; display:block; line-height:1.2;">{{ skill }}</span></span>
       </div>
     </div>
 
@@ -57,8 +57,8 @@ defineProps<{ data: ResumeData }>()
         Portfolio
       </p>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-        <div v-for="(img, i) in data.portfolioImages" :key="i" style="aspect-ratio:1; border-radius:0.25rem; overflow:hidden;">
-          <img :src="img" style="width:100%;height:100%;object-fit:cover;" />
+        <div v-for="(img, i) in data.portfolioImages" :key="i" style="position:relative; padding-bottom:100%; border-radius:0.25rem; overflow:hidden;">
+          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
         </div>
       </div>
     </div>
