@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
+export interface PortfolioItem {
+  image: string
+  caption: string
+}
+
 export interface ResumeData {
   name: string
   birthDate: string
@@ -8,7 +13,7 @@ export interface ResumeData {
   phone: string
   profileImage: string | null
   skills: string[]
-  portfolioImages: string[]
+  portfolioImages: PortfolioItem[]
   career: string
   certifications: string
   introduction: string

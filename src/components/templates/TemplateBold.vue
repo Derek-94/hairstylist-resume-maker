@@ -56,9 +56,14 @@ defineProps<{ data: ResumeData }>()
         <span style="display:inline-block; width:16px; height:3px; background:#fed65b; border-radius:2px;"></span>
         Portfolio
       </p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-        <div v-for="(img, i) in data.portfolioImages" :key="i" style="position:relative; padding-bottom:100%; border-radius:0.25rem; overflow:hidden;">
-          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
+      <div style="display:flex; flex-direction:column; gap:0.875rem;">
+        <div v-for="(item, i) in data.portfolioImages" :key="i" style="border-radius:0.375rem; overflow:hidden; border:1px solid #e8e8e8;">
+          <div style="position:relative; padding-bottom:72%;">
+            <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${item.image}');background-size:cover;background-position:center;`"></div>
+          </div>
+          <div v-if="item.caption" style="background:#ffffff; padding:0.6rem 0.875rem; border-top:3px solid #fed65b;">
+            <p style="font-size:0.8rem; line-height:1.5; color:#444748; word-break:break-word;">{{ item.caption }}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -45,9 +45,14 @@ defineProps<{ data: ResumeData }>()
     <!-- 포트폴리오 -->
     <div v-if="data.portfolioImages.length" style="padding:1.5rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#e9c349; margin-bottom:0.875rem;">Portfolio</p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem;">
-        <div v-for="(img, i) in data.portfolioImages" :key="i" style="position:relative; padding-bottom:100%; border-radius:0.5rem; overflow:hidden;">
-          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
+      <div style="display:flex; flex-direction:column; gap:0.875rem;">
+        <div v-for="(item, i) in data.portfolioImages" :key="i" style="border-radius:0.625rem; overflow:hidden; border:1px solid rgba(233,195,73,0.15);">
+          <div style="position:relative; padding-bottom:72%;">
+            <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${item.image}');background-size:cover;background-position:center;`"></div>
+          </div>
+          <div v-if="item.caption" style="background:rgba(233,195,73,0.06); padding:0.6rem 0.875rem; border-top:1px solid rgba(233,195,73,0.15);">
+            <p style="font-size:0.8rem; line-height:1.5; color:#bbb; word-break:break-word;">{{ item.caption }}</p>
+          </div>
         </div>
       </div>
     </div>
