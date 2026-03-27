@@ -29,25 +29,59 @@ const currentTemplate = () => templates[selectedId.value]
 
 const exportingType = ref<'pdf' | 'image' | null>(null)
 
-const templateBgColors = ['#f9f9f9', '#121212', '#f5f6f7', '#ffffff']
-
 async function getCanvas() {
   await document.fonts.ready
   const el = resumeRef.value!
   const w = el.offsetWidth
   const h = el.scrollHeight
   const html2canvas = (await import('html2canvas')).default
-  return html2canvas(el, {
+  const canvas = await html2canvas(el, {
     scale: 2,
     useCORS: true,
     allowTaint: true,
-    backgroundColor: templateBgColors[selectedId.value],
+    backgroundColor: null,
     logging: false,
     width: w,
     height: h,
     windowWidth: w,
     windowHeight: h,
   })
+  return cropTransparentEdges(canvas)
+}
+
+function cropTransparentEdges(canvas: HTMLCanvasElement): HTMLCanvasElement {
+  const ctx = canvas.getContext('2d')!
+  const { width, height } = canvas
+  const data = ctx.getImageData(0, 0, width, height).data
+
+  let top = 0, bottom = height, left = 0, right = width
+
+  outer: for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 0) { top = y; break outer }
+    }
+  }
+  outer: for (let y = height - 1; y >= 0; y--) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 0) { bottom = y + 1; break outer }
+    }
+  }
+  outer: for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      if (data[(y * width + x) * 4 + 3] > 0) { left = x; break outer }
+    }
+  }
+  outer: for (let x = width - 1; x >= 0; x--) {
+    for (let y = 0; y < height; y++) {
+      if (data[(y * width + x) * 4 + 3] > 0) { right = x + 1; break outer }
+    }
+  }
+
+  const cropped = document.createElement('canvas')
+  cropped.width = right - left
+  cropped.height = bottom - top
+  cropped.getContext('2d')!.drawImage(canvas, left, top, cropped.width, cropped.height, 0, 0, cropped.width, cropped.height)
+  return cropped
 }
 
 async function exportPDF() {
