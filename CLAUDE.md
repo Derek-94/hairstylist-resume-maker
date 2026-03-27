@@ -105,6 +105,11 @@ src/
 
 ## Pinia Store 구조 (resume.ts)
 ```ts
+interface PortfolioItem {
+  image: string   // base64
+  caption: string // 사진 설명 (빈 문자열 가능)
+}
+
 interface ResumeData {
   name: string
   birthDate: string
@@ -112,7 +117,7 @@ interface ResumeData {
   phone: string
   profileImage: string | null   // base64
   skills: string[]
-  portfolioImages: string[]     // base64 배열
+  portfolioImages: PortfolioItem[]  // image+caption 쌍 배열
   career: string
   certifications: string
   introduction: string
@@ -143,11 +148,17 @@ pnpm build       # 프로덕션 빌드
 ---
 
 ## 앞으로 할 것들 (TODO)
-- [ ] 보유 기술 태그 저장 품질 개선 (html2canvas 렌더링 버그 — 현재 미해결)
+- [ ] 보유 기술 태그 저장 품질 개선 (html2canvas 렌더링 버그 — 부분 해결, 완전 해결 미완)
 - [ ] 모바일 실기기 테스트
+- [ ] feature/portfolio-caption 브랜치 → main 머지 (2026-03-27 기준 미머지)
+- [x] 포트폴리오 사진 캡션 기능 추가 (스텝7 캡션 입력 UI + 템플릿 4종 반영)
+- [x] 저장 이미지 투명 여백 크롭 (cropTransparentEdges 함수)
+- [x] Vercel SPA 라우팅 설정 (vercel.json — 직접 URL 접근 404 해결)
+- [x] 저장 이미지 흰색 테두리 제거 (템플릿별 배경색 명시)
+- [x] html2canvas 한글 태그 밀림 수정 (img{display:unset} + background-image 방식)
 - [x] 보유 기술 커스텀 입력 추가 (목록에 없는 기술 직접 입력 가능)
 - [x] 배포 완료 (Vercel — hairstylist-resume-maker.vercel.app)
-- [x] PDF + 이미지 동시 저장 지원
+- [x] PDF + 이미지 저장 버튼 분리 제공
 - [x] Stitch MCP 연동 (실제 디자인 참조용으로 활용)
 
 ---
@@ -177,13 +188,63 @@ pnpm build       # 프로덕션 빌드
 - 캡처 대상: `resumeRef`는 `rounded-xl` 안쪽 div에 걸어야 함. 바깥에 걸면 흰 모서리 아티팩트 발생.
 - `backgroundColor: null` — 투명 배경으로 캡처해야 템플릿 자체 배경이 올바르게 나옴
 - `windowWidth: el.offsetWidth` 사용 (scrollWidth 아님)
+- 캡처 후 `cropTransparentEdges(canvas)` 함수로 투명 영역 실제 크롭 (픽셀 스캔 방식)
+- `document.fonts.ready` 대기 후 캡처 (폰트 누락 방지)
+
+### 결정 6: Vercel SPA 라우팅
+- `vercel.json`에 rewrite 규칙 추가 — 모든 경로를 `index.html`로 리다이렉트
+- `/survey/1`, `/preview` 등 직접 URL 접근 시 404 발생하던 문제 해결
+
+### 결정 7: 포트폴리오 캡션 구조 변경
+- `portfolioImages: string[]` → `portfolioImages: PortfolioItem[]` (`{ image, caption }`)
+- 설문 스텝 7: 사진 업로드 후 각 사진 아래 캡션 입력 textarea 노출
+- 미리보기/저장: 2열 그리드 → 1열 카드 레이아웃 (사진 + 캡션 세트로 표시)
+- 템플릿 4종(Minimal, Dark, Warm, Bold) 모두 동일하게 적용
 
 ---
 
-## html2canvas 알려진 이슈
-- **보유 기술 태그 텍스트 정렬**: 한국어 폰트 baseline 계산이 브라우저와 달라 텍스트가 태그 박스 아래에 붙는 현상 발생. `display:flex`, `inline-flex`, `inline-block` + padding 모두 시도했으나 미해결 상태.
-- **flex gap 지원 불완전**: flex container의 `gap` 속성이 제대로 렌더링 안 되는 경우 있음. 태그 컨테이너는 `line-height` + `margin` 방식으로 우회.
-- **rounded-xl 아티팩트**: 캡처 대상 div에 border-radius 있으면 모서리에 backgroundColor 색으로 채워짐. 캡처 대상은 border-radius 없는 안쪽 div로 지정할 것.
+## html2canvas 알려진 이슈 및 해결책
+
+### 해결됨
+- **한글 태그 텍스트 밀림**: Tailwind preflight의 `img { display: block }`이 CJK 폰트 baseline을 아래로 밀어내는 버그.
+  - **해결**: `main.css`에 `img { display: unset }` 추가
+- **이미지 비율 찌그러짐**: html2canvas가 `object-fit: cover` 미지원.
+  - **해결**: `<img>` 대신 `background-image` + `background-size: cover` 방식으로 교체. `aspect-ratio` 도 미지원 → `position:relative + padding-bottom:100%` 방식으로 교체.
+- **저장 이미지 흰색 테두리**: `backgroundColor: null`(투명)로 캡처 시 html2canvas가 캔버스를 콘텐츠보다 크게 잡아 흰 테두리 발생.
+  - **해결**: 템플릿별 배경색을 명시적으로 지정 (투명 캡처 포기).
+- **저장 이미지 투명 여백**: 배경색 지정 후에도 남는 투명 영역.
+  - **해결**: `cropTransparentEdges(canvas)` 함수 — 픽셀 데이터 스캔 후 실제 크롭.
+- **rounded-xl 모서리 아티팩트**: 캡처 대상 div에 border-radius 있으면 모서리에 색 번짐.
+  - **해결**: `resumeRef`를 rounded-xl 바깥이 아닌 안쪽 div에 연결.
+
+### 미해결
+- **보유 기술 태그 텍스트 정렬**: 위 img fix로 많이 개선됐으나 완전히 해결되지 않은 경우 있음. `display:inline-flex`, `inline-block` + padding 조합으로 최대한 완화.
+- **flex gap 지원 불완전**: flex container의 `gap` 속성이 제대로 렌더링 안 되는 경우 있음. 태그 컨테이너는 `margin` 방식으로 우회.
+
+---
+
+## 작업 히스토리 (날짜별)
+
+### 2026-03-27
+현재 브랜치: `feature/portfolio-caption` (main 미머지 상태)
+
+**오늘 완료한 작업 (커밋 순서)**
+1. 웜 템플릿 프로필 사진 z-index 수정 (헤더에 가리는 문제)
+2. 미리보기 배경 `#d8d8d8` 그레이 + 이력서 카드 드롭섀도우 추가
+3. PDF 저장 품질 개선 — 다중 페이지 지원, `document.fonts.ready` 대기
+4. 저장 방식 분리 — 이미지 저장(PNG)과 PDF 저장 버튼 별도 제공
+5. html2canvas 렌더링 품질 개선 — `windowWidth/width/height` 명시
+6. 긴 텍스트 줄바꿈 처리 — 경력/자격증/자기소개에 `word-break` 추가
+7. html2canvas 흰 배경 제거 — `resumeRef`를 안쪽 div로 이동, `backgroundColor: null`
+8. **html2canvas 한글 태그 밀림 수정** — `img { display: unset }`, `object-fit` → `background-image` 방식
+9. 저장 이미지 흰색 테두리 제거 — 템플릿별 배경색 명시
+10. **Vercel SPA 라우팅 설정** — `vercel.json` rewrite 추가 (직접 URL 404 해결)
+11. 저장 이미지 투명 여백 실제 크롭 — `cropTransparentEdges` 함수 구현
+12. **포트폴리오 사진 캡션 기능 추가** — `PortfolioItem` 타입, 스텝7 캡션 UI, 템플릿 4종 반영
+
+**다음 할 일**
+- `feature/portfolio-caption` → `main` 머지 및 Vercel 배포 확인
+- 모바일 실기기 테스트
 
 ---
 
