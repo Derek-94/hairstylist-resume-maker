@@ -105,11 +105,6 @@ src/
 
 ## Pinia Store 구조 (resume.ts)
 ```ts
-interface PortfolioItem {
-  image: string   // base64
-  caption: string // 사진 설명 (빈 문자열 가능)
-}
-
 interface ResumeData {
   name: string
   birthDate: string
@@ -117,7 +112,7 @@ interface ResumeData {
   phone: string
   profileImage: string | null   // base64
   skills: string[]
-  portfolioImages: PortfolioItem[]  // image+caption 쌍 배열
+  portfolioImages: string[]     // base64 배열
   career: string
   certifications: string
   introduction: string
@@ -150,8 +145,10 @@ pnpm build       # 프로덕션 빌드
 ## 앞으로 할 것들 (TODO)
 - [ ] 보유 기술 태그 저장 품질 개선 (html2canvas 렌더링 버그 — 부분 해결, 완전 해결 미완)
 - [ ] 모바일 실기기 테스트
-- [ ] feature/portfolio-caption 브랜치 → main 머지 (2026-03-27 기준 미머지)
-- [x] 포트폴리오 사진 캡션 기능 추가 (스텝7 캡션 입력 UI + 템플릿 4종 반영)
+- [x] 인쇄 기능 추가 (@media print, A4, 포트폴리오 2번째 장)
+- [x] 사진 크롭 기능 추가 (cropperjs, 프로필 + 포트폴리오)
+- [x] 포트폴리오 레이아웃 변경 (첫 사진 크게 + 나머지 2열 그리드)
+- [x] 포트폴리오 업로드 플로우 변경 (한 장씩 추가)
 - [x] 저장 이미지 투명 여백 크롭 (cropTransparentEdges 함수)
 - [x] Vercel SPA 라우팅 설정 (vercel.json — 직접 URL 접근 404 해결)
 - [x] 저장 이미지 흰색 테두리 제거 (템플릿별 배경색 명시)
@@ -195,11 +192,27 @@ pnpm build       # 프로덕션 빌드
 - `vercel.json`에 rewrite 규칙 추가 — 모든 경로를 `index.html`로 리다이렉트
 - `/survey/1`, `/preview` 등 직접 URL 접근 시 404 발생하던 문제 해결
 
-### 결정 7: 포트폴리오 캡션 구조 변경
-- `portfolioImages: string[]` → `portfolioImages: PortfolioItem[]` (`{ image, caption }`)
-- 설문 스텝 7: 사진 업로드 후 각 사진 아래 캡션 입력 textarea 노출
-- 미리보기/저장: 2열 그리드 → 1열 카드 레이아웃 (사진 + 캡션 세트로 표시)
-- 템플릿 4종(Minimal, Dark, Warm, Bold) 모두 동일하게 적용
+### 결정 7: 포트폴리오 업로드 플로우 + 크롭
+- 기존: 여러 장 동시 선택 → 변경: 한 장씩 선택 → 크롭 → 목록 추가
+- cropperjs v1 사용, 1:1 비율 강제, 핀치/드래그 지원
+- 프로필 사진/포트폴리오 사진 모두 업로드 후 크롭 모달 노출
+- `CropModal.vue` 컴포넌트로 분리
+
+### 결정 8: 포트폴리오 레이아웃
+- 첫 번째 사진: 3:2 비율로 크게 (메인)
+- 나머지 사진: 2열 그리드, 1:1 정사각형
+- 업로드 순서대로 자동으로 첫 번째가 메인
+- 템플릿 4종 모두 동일 적용
+
+### 결정 9: 인쇄 기능 (@media print)
+- `window.print()` + `@media print` CSS 방식 채택 (html2canvas 방식 대비 품질 우수)
+- 인쇄 버튼 클릭 시 confirm 다이얼로그 → 미니멀 템플릿으로 강제 전환 → 인쇄 → 복원
+- 이유: 다크/웜/볼드 템플릿은 잉크 낭비가 심함
+- `@page { size: A4; margin: 12mm }` 설정
+- 인쇄 시 포트폴리오 섹션이 2번째 장으로 이동 (경력/자격증이 앞장에)
+  - `main.css`에 전역 `.minimal-root { display:flex } .minimal-portfolio { order:99; break-before:page }` 적용
+  - scoped `:deep()` 방식은 print에서 불안정 → 전역 CSS로 이동
+- `print-color-adjust: exact` 전역 적용으로 배경색 강제 인쇄
 
 ---
 
@@ -224,6 +237,23 @@ pnpm build       # 프로덕션 빌드
 ---
 
 ## 작업 히스토리 (날짜별)
+
+### 2026-03-31
+현재 브랜치: `main` (모든 작업 머지 완료)
+
+**완료한 작업**
+1. 사진 크롭 기능 — `CropModal.vue` (cropperjs v1, 1:1 비율)
+2. 포트폴리오 업로드 플로우 변경 — 한 장씩 선택 → 크롭 → 추가
+3. 포트폴리오 레이아웃 변경 — 첫 사진 크게(3:2) + 나머지 2열 그리드(1:1), 템플릿 4종
+4. 포트폴리오 캡션 기능 추가 후 제거 (피드백 반영)
+5. 인쇄 기능 (`@media print`) — 미니멀 강제, A4, 포트폴리오 2번째 장
+6. 인쇄 레이아웃 버그 수정 — scoped `:deep()` 불안정 → `main.css` 전역 CSS로 이동
+
+**다음 할 일**
+- 모바일 실기기 테스트
+- 보유 기술 태그 렌더링 품질 개선
+
+---
 
 ### 2026-03-27
 현재 브랜치: `feature/portfolio-caption` (main 미머지 상태)
