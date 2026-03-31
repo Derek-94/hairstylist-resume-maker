@@ -146,6 +146,16 @@ async function exportImage() {
     box-shadow: none !important;
     border-radius: 0 !important;
   }
+
+  /* 인쇄 시 포트폴리오를 맨 뒤로 */
+  :deep(.minimal-root) {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  :deep(.minimal-portfolio) {
+    order: 99 !important;
+  }
 }
 </style>
 
