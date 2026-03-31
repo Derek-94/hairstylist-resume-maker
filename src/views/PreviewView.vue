@@ -29,6 +29,10 @@ const currentTemplate = () => templates[selectedId.value]
 
 const exportingType = ref<'pdf' | 'image' | null>(null)
 
+function printResume() {
+  window.print()
+}
+
 async function getCanvas() {
   await document.fonts.ready
   const el = resumeRef.value!
@@ -119,19 +123,38 @@ async function exportImage() {
 }
 </script>
 
+<style scoped>
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-resume-wrapper {
+    background: white !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-resume-card {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
+</style>
+
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <!-- Top bar -->
-    <div class="bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100 sticky top-0 z-10">
+    <div class="no-print bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100 sticky top-0 z-10">
       <button @click="router.push('/survey/1')" class="text-sm text-gray-500">← 수정하기</button>
       <span class="text-sm font-semibold text-gray-900">미리보기</span>
       <div class="w-16" />
     </div>
 
     <!-- Resume -->
-    <div class="flex-1 overflow-y-auto py-8 px-5" style="background:#d8d8d8;">
+    <div class="print-resume-wrapper flex-1 overflow-y-auto py-8 px-5" style="background:#d8d8d8;">
       <div
-        class="rounded-xl overflow-hidden"
+        class="print-resume-card rounded-xl overflow-hidden"
         style="box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);"
       >
         <div ref="resumeRef">
@@ -141,7 +164,7 @@ async function exportImage() {
     </div>
 
     <!-- Template selector -->
-    <div class="bg-white border-t border-gray-100 px-4 pt-3 pb-2">
+    <div class="no-print bg-white border-t border-gray-100 px-4 pt-3 pb-2">
       <p class="text-xs text-gray-400 mb-2 text-center">디자인 선택</p>
       <div class="flex gap-2 justify-center">
         <button
@@ -159,22 +182,29 @@ async function exportImage() {
     </div>
 
     <!-- Export buttons -->
-    <div class="px-4 pb-8 pt-3 bg-white flex gap-3">
+    <div class="no-print px-4 pb-8 pt-3 bg-white flex gap-2">
       <button
         @click="exportImage"
         :disabled="!!exportingType"
         class="flex-1 py-4 rounded-2xl font-semibold text-base transition-all disabled:opacity-50"
         style="background:#f3f3f3; color:#1a1c1c;"
       >
-        {{ exportingType === 'image' ? '저장 중...' : '🖼 이미지 저장' }}
+        {{ exportingType === 'image' ? '저장 중...' : '🖼 이미지' }}
       </button>
       <button
         @click="exportPDF"
         :disabled="!!exportingType"
         class="flex-1 py-4 rounded-2xl font-semibold text-base transition-all disabled:opacity-50"
+        style="background:#f3f3f3; color:#1a1c1c;"
+      >
+        {{ exportingType === 'pdf' ? '저장 중...' : '📄 PDF' }}
+      </button>
+      <button
+        @click="printResume"
+        class="flex-1 py-4 rounded-2xl font-semibold text-base transition-all"
         style="background:#1a1c1c; color:#ffffff;"
       >
-        {{ exportingType === 'pdf' ? '저장 중...' : '📄 PDF 저장' }}
+        🖨 인쇄
       </button>
     </div>
   </div>
