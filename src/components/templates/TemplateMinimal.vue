@@ -45,17 +45,17 @@ defineProps<{ data: ResumeData }>()
     </div>
 
     <!-- 포트폴리오 -->
-    <div v-if="data.portfolioImages.length" style="background:#f3f3f3; padding:1.25rem 1.5rem;">
+    <div v-if="data.portfolioImages.length" style="background:#f3f3f3; padding:1.25rem 1.5rem; page-break-inside:avoid;">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#747878; margin-bottom:0.75rem;">Portfolio</p>
       <!-- 메인 사진 -->
-      <div style="border-radius:0.625rem; overflow:hidden; border:1px solid #e8e8e8;">
+      <div style="border-radius:0.625rem; overflow:hidden; border:1px solid #e8e8e8; page-break-inside:avoid;">
         <div style="position:relative; padding-bottom:66%;">
           <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${data.portfolioImages[0]}');background-size:cover;background-position:center;`"></div>
         </div>
       </div>
       <!-- 나머지 그리드 -->
-      <div v-if="data.portfolioImages.length > 1" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
-        <div v-for="(img, i) in data.portfolioImages.slice(1)" :key="i" style="border-radius:0.5rem; overflow:hidden; border:1px solid #e8e8e8;">
+      <div v-if="data.portfolioImages.length > 1" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem; page-break-inside:avoid;">
+        <div v-for="(img, i) in data.portfolioImages.slice(1)" :key="i" style="border-radius:0.5rem; overflow:hidden; border:1px solid #e8e8e8; page-break-inside:avoid;">
           <div style="position:relative; padding-bottom:100%;">
             <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
           </div>
@@ -64,7 +64,7 @@ defineProps<{ data: ResumeData }>()
     </div>
 
     <!-- 경력 -->
-    <div v-if="data.career" style="background:#ffffff; padding:1.25rem 1.5rem;">
+    <div v-if="data.career" style="background:#ffffff; padding:1.25rem 1.5rem; page-break-inside:avoid;">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#747878; margin-bottom:0.75rem;">Career</p>
       <div style="border-left:2px solid #e2e2e2; padding-left:1rem;">
         <p style="font-size:0.875rem; line-height:1.7; color:#444748; white-space:pre-line; word-break:break-word; overflow-wrap:break-word;">{{ data.career }}</p>
@@ -72,7 +72,7 @@ defineProps<{ data: ResumeData }>()
     </div>
 
     <!-- 자격증 -->
-    <div v-if="data.certifications" style="background:#f3f3f3; padding:1.25rem 1.5rem;">
+    <div v-if="data.certifications" style="background:#f3f3f3; padding:1.25rem 1.5rem; page-break-inside:avoid;">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#747878; margin-bottom:0.75rem;">Certifications</p>
       <p style="font-size:0.875rem; line-height:1.7; color:#444748; white-space:pre-line; word-break:break-word; overflow-wrap:break-word;">{{ data.certifications }}</p>
     </div>
