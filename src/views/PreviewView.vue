@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useResumeStore } from '@/stores/resume'
 import TemplateMinimal from '@/components/templates/TemplateMinimal.vue'
@@ -30,7 +30,14 @@ const currentTemplate = () => templates[selectedId.value]
 const exportingType = ref<'pdf' | 'image' | null>(null)
 
 function printResume() {
-  window.print()
+  const ok = window.confirm('화이트 버전(미니멀)으로만 인쇄 가능합니다.\n계속하시겠어요?')
+  if (!ok) return
+  const original = selectedId.value
+  selectTemplate(0)
+  nextTick(() => {
+    window.print()
+    window.addEventListener('afterprint', () => selectTemplate(original), { once: true })
+  })
 }
 
 async function getCanvas() {
