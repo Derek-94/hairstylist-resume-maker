@@ -56,9 +56,18 @@ defineProps<{ data: ResumeData }>()
         <span style="display:inline-block; width:16px; height:3px; background:#fed65b; border-radius:2px;"></span>
         Portfolio
       </p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-        <div v-for="(img, i) in data.portfolioImages" :key="i" style="position:relative; padding-bottom:100%; border-radius:0.25rem; overflow:hidden;">
-          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
+      <!-- 메인 사진 -->
+      <div style="border-radius:0.375rem; overflow:hidden; border:1px solid #e8e8e8;">
+        <div style="position:relative; padding-bottom:66%;">
+          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${data.portfolioImages[0]}');background-size:cover;background-position:center;`"></div>
+        </div>
+      </div>
+      <!-- 나머지 그리드 -->
+      <div v-if="data.portfolioImages.length > 1" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+        <div v-for="(img, i) in data.portfolioImages.slice(1)" :key="i" style="border-radius:0.375rem; overflow:hidden; border:1px solid #e8e8e8;">
+          <div style="position:relative; padding-bottom:100%;">
+            <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
+          </div>
         </div>
       </div>
     </div>

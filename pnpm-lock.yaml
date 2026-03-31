@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      cropperjs:
+        specifier: ^1.6.2
+        version: 1.6.2
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
@@ -537,6 +540,9 @@ packages:
 
   core-js@3.49.0:
     resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
+
+  cropperjs@1.6.2:
+    resolution: {integrity: sha512-nhymn9GdnV3CqiEHJVai54TULFAE3VshJTXSqSJKa8yXAKyBKDWdhHarnlIPrshJ0WMFTGuFvG02YjLXfPiuOA==}
 
   css-line-break@2.1.0:
     resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
@@ -1346,6 +1352,8 @@ snapshots:
 
   core-js@3.49.0:
     optional: true
+
+  cropperjs@1.6.2: {}
 
   css-line-break@2.1.0:
     dependencies:

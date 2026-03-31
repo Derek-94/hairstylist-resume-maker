@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useResumeStore, SKILL_OPTIONS } from '@/stores/resume'
+import CropModal from '@/components/CropModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -106,25 +107,47 @@ function addCustomSkill() {
   customSkillInput.value = ''
 }
 
+// ── 크롭 모달 ────────────────────────────────────────────────
+const cropSrc = ref('')
+const cropTarget = ref<'profile' | 'portfolio'>('profile')
+const cropVisible = ref(false)
+
+function openCrop(src: string, target: 'profile' | 'portfolio') {
+  cropSrc.value = src
+  cropTarget.value = target
+  cropVisible.value = true
+}
+
+function onCropConfirm(croppedBase64: string) {
+  cropVisible.value = false
+  if (cropTarget.value === 'profile') {
+    store.update({ profileImage: croppedBase64 })
+  } else {
+    store.update({ portfolioImages: [...store.data.portfolioImages, croppedBase64] })
+  }
+}
+
+function onCropCancel() {
+  cropVisible.value = false
+}
+
 // ── 이미지 ────────────────────────────────────────────────────
 function handleImageSingle(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
+  ;(e.target as HTMLInputElement).value = ''
   const reader = new FileReader()
-  reader.onload = (ev) => store.update({ profileImage: ev.target?.result as string })
+  reader.onload = (ev) => openCrop(ev.target?.result as string, 'profile')
   reader.readAsDataURL(file)
 }
 
 function handleImageMulti(e: Event) {
-  const files = Array.from((e.target as HTMLInputElement).files || [])
-  files.forEach(file => {
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const current = [...store.data.portfolioImages]
-      store.update({ portfolioImages: [...current, ev.target?.result as string] })
-    }
-    reader.readAsDataURL(file)
-  })
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  ;(e.target as HTMLInputElement).value = ''
+  const reader = new FileReader()
+  reader.onload = (ev) => openCrop(ev.target?.result as string, 'portfolio')
+  reader.readAsDataURL(file)
 }
 
 function removePortfolioImage(index: number) {
@@ -132,6 +155,7 @@ function removePortfolioImage(index: number) {
   images.splice(index, 1)
   store.update({ portfolioImages: images })
 }
+
 
 // ── 진행 ──────────────────────────────────────────────────────
 function canProceed() {
@@ -166,6 +190,14 @@ function skip() {
 </script>
 
 <template>
+  <CropModal
+    v-if="cropVisible"
+    :src="cropSrc"
+    :aspect-ratio="1"
+    @confirm="onCropConfirm"
+    @cancel="onCropCancel"
+  />
+
   <div v-if="currentStep" class="min-h-screen flex flex-col" style="background: #0d0d0d; color: #fff;">
 
     <!-- Progress bar -->
@@ -337,27 +369,30 @@ function skip() {
 
           <!-- Multi image -->
           <template v-else-if="currentStep.type === 'image-multi'">
-            <div class="grid grid-cols-3 gap-2">
-              <div
-                v-for="(img, idx) in store.data.portfolioImages"
-                :key="idx"
-                class="relative aspect-square rounded-2xl overflow-hidden"
-              >
-                <img :src="img" class="w-full h-full object-cover" />
-                <button
-                  @click="removePortfolioImage(idx)"
-                  class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                  style="background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px);"
-                >✕</button>
+            <div class="overflow-y-auto" style="max-height: calc(100vh - 280px);">
+              <!-- 업로드 그리드 -->
+              <div class="grid grid-cols-3 gap-2">
+                <div
+                  v-for="(img, idx) in store.data.portfolioImages"
+                  :key="idx"
+                  class="relative aspect-square rounded-2xl overflow-hidden"
+                >
+                  <img :src="img" class="w-full h-full object-cover" />
+                  <button
+                    @click="removePortfolioImage(idx)"
+                    class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                    style="background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px);"
+                  >✕</button>
+                </div>
+                <label
+                  class="aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer"
+                  style="background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.15);"
+                >
+                  <span class="text-2xl" style="color: rgba(255,255,255,0.3);">+</span>
+                  <span class="text-xs" style="color: rgba(255,255,255,0.25);">추가</span>
+                  <input type="file" accept="image/*" class="hidden" @change="handleImageMulti" />
+                </label>
               </div>
-              <label
-                class="aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer"
-                style="background: rgba(255,255,255,0.04); border: 1.5px dashed rgba(255,255,255,0.15);"
-              >
-                <span class="text-2xl" style="color: rgba(255,255,255,0.3);">+</span>
-                <span class="text-xs" style="color: rgba(255,255,255,0.25);">추가</span>
-                <input type="file" accept="image/*" multiple class="hidden" @change="handleImageMulti" />
-              </label>
             </div>
           </template>
 
