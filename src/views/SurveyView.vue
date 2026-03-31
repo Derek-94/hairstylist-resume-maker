@@ -123,7 +123,7 @@ function onCropConfirm(croppedBase64: string) {
   if (cropTarget.value === 'profile') {
     store.update({ profileImage: croppedBase64 })
   } else {
-    store.update({ portfolioImages: [...store.data.portfolioImages, { image: croppedBase64, caption: '' }] })
+    store.update({ portfolioImages: [...store.data.portfolioImages, croppedBase64] })
   }
 }
 
@@ -155,6 +155,7 @@ function removePortfolioImage(index: number) {
   images.splice(index, 1)
   store.update({ portfolioImages: images })
 }
+
 
 // ── 진행 ──────────────────────────────────────────────────────
 function canProceed() {
@@ -370,13 +371,13 @@ function skip() {
           <template v-else-if="currentStep.type === 'image-multi'">
             <div class="overflow-y-auto" style="max-height: calc(100vh - 280px);">
               <!-- 업로드 그리드 -->
-              <div class="grid grid-cols-3 gap-2 mb-4">
+              <div class="grid grid-cols-3 gap-2">
                 <div
-                  v-for="(item, idx) in store.data.portfolioImages"
+                  v-for="(img, idx) in store.data.portfolioImages"
                   :key="idx"
                   class="relative aspect-square rounded-2xl overflow-hidden"
                 >
-                  <img :src="item.image" class="w-full h-full object-cover" />
+                  <img :src="img" class="w-full h-full object-cover" />
                   <button
                     @click="removePortfolioImage(idx)"
                     class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
@@ -391,28 +392,6 @@ function skip() {
                   <span class="text-xs" style="color: rgba(255,255,255,0.25);">추가</span>
                   <input type="file" accept="image/*" class="hidden" @change="handleImageMulti" />
                 </label>
-              </div>
-
-              <!-- 캡션 입력 (사진이 있을 때만) -->
-              <div v-if="store.data.portfolioImages.length" class="flex flex-col gap-2">
-                <p class="text-xs mb-1" style="color: rgba(255,255,255,0.3);">각 사진의 설명을 적어주세요 (선택)</p>
-                <div
-                  v-for="(item, idx) in store.data.portfolioImages"
-                  :key="'caption-' + idx"
-                  class="flex items-center gap-3"
-                >
-                  <div class="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0">
-                    <img :src="item.image" class="w-full h-full object-cover" />
-                  </div>
-                  <input
-                    v-model="store.data.portfolioImages[idx].caption"
-                    type="text"
-                    :placeholder="'사진 ' + (idx + 1) + ' 설명'"
-                    maxlength="40"
-                    class="flex-1 outline-none text-sm px-3 py-2 rounded-xl bg-transparent"
-                    style="border: 1.5px solid rgba(255,255,255,0.1); color: #fff;"
-                  />
-                </div>
               </div>
             </div>
           </template>

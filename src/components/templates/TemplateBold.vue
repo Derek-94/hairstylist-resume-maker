@@ -59,20 +59,14 @@ defineProps<{ data: ResumeData }>()
       <!-- 메인 사진 -->
       <div style="border-radius:0.375rem; overflow:hidden; border:1px solid #e8e8e8;">
         <div style="position:relative; padding-bottom:66%;">
-          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${data.portfolioImages[0].image}');background-size:cover;background-position:center;`"></div>
-        </div>
-        <div v-if="data.portfolioImages[0].caption" style="background:#ffffff; padding:0.6rem 0.875rem; border-top:3px solid #fed65b;">
-          <p style="font-size:0.8rem; line-height:1.5; color:#444748; word-break:break-word;">{{ data.portfolioImages[0].caption }}</p>
+          <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${data.portfolioImages[0]}');background-size:cover;background-position:center;`"></div>
         </div>
       </div>
       <!-- 나머지 그리드 -->
       <div v-if="data.portfolioImages.length > 1" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
-        <div v-for="(item, i) in data.portfolioImages.slice(1)" :key="i" style="border-radius:0.375rem; overflow:hidden; border:1px solid #e8e8e8;">
+        <div v-for="(img, i) in data.portfolioImages.slice(1)" :key="i" style="border-radius:0.375rem; overflow:hidden; border:1px solid #e8e8e8;">
           <div style="position:relative; padding-bottom:100%;">
-            <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${item.image}');background-size:cover;background-position:center;`"></div>
-          </div>
-          <div v-if="item.caption" style="background:#ffffff; padding:0.4rem 0.625rem; border-top:2px solid #fed65b;">
-            <p style="font-size:0.7rem; line-height:1.4; color:#444748; word-break:break-word;">{{ item.caption }}</p>
+            <div :style="`position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${img}');background-size:cover;background-position:center;`"></div>
           </div>
         </div>
       </div>
