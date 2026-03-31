@@ -4,7 +4,7 @@ defineProps<{ data: ResumeData }>()
 </script>
 
 <template>
-  <div style="background:#f9f9f9; font-family:'Manrope',sans-serif; color:#1a1c1c; width:100%;">
+  <div class="minimal-root" style="background:#f9f9f9; font-family:'Manrope',sans-serif; color:#1a1c1c; width:100%;">
 
     <!-- Hero: profile + name -->
     <div style="background:#ffffff; padding:2rem 1.5rem 1.5rem;">
@@ -45,7 +45,7 @@ defineProps<{ data: ResumeData }>()
     </div>
 
     <!-- 포트폴리오 -->
-    <div v-if="data.portfolioImages.length" style="background:#f3f3f3; padding:1.25rem 1.5rem; page-break-inside:avoid;">
+    <div v-if="data.portfolioImages.length" class="minimal-portfolio" style="background:#f3f3f3; padding:1.25rem 1.5rem; page-break-inside:avoid;">
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#747878; margin-bottom:0.75rem;">Portfolio</p>
       <!-- 메인 사진 -->
       <div style="border-radius:0.625rem; overflow:hidden; border:1px solid #e8e8e8; page-break-inside:avoid;">
