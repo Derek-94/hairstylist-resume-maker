@@ -155,6 +155,7 @@ async function exportImage() {
 
   :deep(.minimal-portfolio) {
     order: 99 !important;
+    page-break-before: always !important;
   }
 }
 </style>
